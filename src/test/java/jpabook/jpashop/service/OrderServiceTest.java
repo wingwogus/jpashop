@@ -9,8 +9,6 @@ import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.exception.NotEnoughStockException;
-import jpabook.jpashop.repository.ItemRepository;
-import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +31,11 @@ class OrderServiceTest {
     public void 상품주문() throws Exception {
         //given
         Member member = createMember();
-        Item item = createBook("시골 JPA", 10000, 10);
+        Book book = createBook("시골 JPA", 10000, 10);
         int orderCount = 2;
 
         //when
-        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
+        Long orderId = orderService.order(member.getId(), book.getId(), orderCount);
 
         //then
         Order getOrder = orderRepository.findOne(orderId);
@@ -45,7 +43,27 @@ class OrderServiceTest {
         assertThat(getOrder.getStatus()).isEqualTo(OrderStatus.ORDER);
         assertThat(getOrder.getOrderItems().size()).isEqualTo(1);
         assertThat(getOrder.getTotalPrice()).isEqualTo(10000 * 2);
-        assertThat(item.getStockQuantity()).isEqualTo(8);
+        assertThat(book.getStockQuantity()).isEqualTo(8);
+    }
+
+    @Test
+    public void 주문취소() throws Exception {
+        //given
+        Member member = createMember();
+        Book book = createBook("시골 JPA", 10000, 10);
+
+        int orderCount = 2;
+
+        Long orderId = orderService.order(member.getId(), book.getId(), orderCount);
+
+        //when
+        orderService.cancelOrder(orderId);
+
+        //then
+        Order getOrder = orderRepository.findOne(orderId);
+
+        assertThat(getOrder.getStatus()).isEqualTo(OrderStatus.CANCEL);
+        assertThat(book.getStockQuantity()).isEqualTo(10);
     }
 
     @Test
@@ -59,25 +77,6 @@ class OrderServiceTest {
         //then
         assertThrows(NotEnoughStockException.class, () -> orderService.order(member.getId(), item.getId(), orderCount));
     }
-
-    @Test
-    public void 주문취소() throws Exception {
-        //given
-        Member member = createMember();
-        Item item = createBook("시골 JPA", 10000, 10);
-        int orderCount = 2;
-
-        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
-
-        //when
-        orderService.cancelOrder(orderId);
-
-        //then
-        Order getOrder = orderRepository.findOne(orderId);
-
-        assertThat(getOrder.getStatus()).isEqualTo(OrderStatus.CANCEL);
-        assertThat(item.getStockQuantity()).isEqualTo(10);
-     }
 
     private Member createMember() {
         Member member = new Member();
