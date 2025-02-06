@@ -42,9 +42,8 @@ public class OrderSimpleApiController {
     public List<SimpleOrderDto> ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
         List<SimpleOrderDto> result = orders.stream()
-                .map(SimpleOrderDto::new)
-                .toList();
-
+                                            .map(SimpleOrderDto::new)
+                                            .toList();
         return result;
     }
 

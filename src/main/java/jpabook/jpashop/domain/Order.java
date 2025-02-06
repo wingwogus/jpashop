@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.boot.autoconfigure.batch.BatchDataSource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
