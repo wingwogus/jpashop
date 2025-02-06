@@ -43,7 +43,16 @@ public class OrderApiController {
 
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
-        return orderRepository.finAllWithMemberDeliveryOrderItem().stream()
+        return orderRepository.findAllWithOrderItem().stream()
+                .map(OrderDto::new)
+                .toList();
+    }
+
+
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> ordersV3_1(int offset, int limit) {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
+        return orders.stream()
                 .map(OrderDto::new)
                 .toList();
     }
@@ -91,6 +100,7 @@ public class OrderApiController {
                     .map(OrderItemDto::new)
                     .toList();
         }
+        
     }
 
     @Data
@@ -106,6 +116,4 @@ public class OrderApiController {
             count = orderItem.getCount();
         }
     }
-
-
 }
