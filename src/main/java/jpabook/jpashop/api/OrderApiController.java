@@ -61,7 +61,7 @@ public class OrderApiController {
     public List<OrderDto> ordersV3_page(
             @RequestParam(value = "offset", defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "100") int limit) {
-        return orderRepository.finAllWithMemberDelivery(offset, limit).stream()
+        return orderRepository.findAllWithMemberDelivery(offset, limit).stream()
                 .map(OrderDto::new)
                 .toList();
     }
